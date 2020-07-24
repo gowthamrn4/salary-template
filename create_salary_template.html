@@ -1,0 +1,392 @@
+{% extends 'base_admin.html' %}
+{% load custom_template %}
+{% load static %}
+
+{% block title %}Salary Template{% endblock title %}
+
+{% block content %}
+
+  <style type="text/css">
+  	.table thead th{
+        background-color: #fff;
+        font-size: 10px;
+        height: 20px;
+        color: #000;
+        text-transform: uppercase;
+        padding-left: 10px;
+        padding-right: 10px;
+  	}
+    .input-group-prepend_01{
+        margin-right: -31px;
+      }
+    .salary-template-svg-info {
+        color: #a5a5a5;
+        width: 97px;
+        position: absolute;
+        left: 30px;
+    }
+    .error_label{
+        color: red;
+        font-size: 13px;
+        margin-left: 6px;
+    }
+    .input_type{
+        display:flex;
+        width:100%;
+    }
+  </style>
+
+    <div class="row">
+      <div class="col-sm-3" style="max-width:20%">
+             <div class="scrollbar-sidebar" style="position:fixed">
+                    <div class="app-sidebar__inner">
+                        <ul class="vertical-nav-menu">
+							<li id="organization_master_toc">
+								<a href="javascript:void();">
+									<i class="metismenu-icon lnr-apartment"></i>
+                                    EARNINGS
+									<i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+								</a>
+								<ul id='earings' >
+                                   <div id="earnings_error" style="width:55%"></div>
+								 {% for obj in earning_type_map %}
+                                    <li id="{{obj.key}}" class="earings_menu">
+                                      <a id="{{obj.key}}inner" href="javascript:void();" data-title="{{obj.title}}" data-calculation_type="{{obj.calculation_type}}" data-earings_id="{{obj.id}}">
+                                        <i class="metismenu-icon pe-7s-rocket"></i>{{obj.title}}<i class="metismenu-icon pe-7s-plus caret-left"></i>
+                                      </a>
+                                   </li>
+                                   {% endfor %}
+								</ul>
+								<li id="statutory_components_toc">
+                                    <a href="javascript:void();">
+                                        <i class="metismenu-icon lnr-apartment"></i>
+                                         DEDUCTION
+                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                    </a>
+                                    <ul id="deduction">
+                                     <div id="deduction_error" style="width:55%"></div>
+                                    {% for obj in deduction_list %}
+                                        <li id="{{obj.key}}" class="deduction_menu">
+                                        <a id="{{obj.key}}inner" href="javascript:void();" data-title="{{obj.title}}" data-deduction_id="{{obj.id}}">
+                                            <i class="metismenu-icon pe-7s-rocket"></i>{{obj.title}}<i class="metismenu-icon pe-7s-plus caret-left"></i>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                        </ul>
+                                 </li>
+                                </ul>
+                            </li>
+						</ul>
+                        <div class="salary-template-svg-info">
+                            <div class="info-arrow"><svg style="width: 47px;" version="1.1" x="0" y="0" viewBox="0 0 512 512" xml:space="preserve" class="icon"><path fill="none" d="M51.1 381.3c-.1-.9-.2-1.8-.3-2.6-3.4 3.1-6.7 6.1-7 11 0 0-1.8 1.1-2.6 1.7-.4 1.5.6 2 1.3 2.8 3.1-3.9 5.6-8 6.8-13.5-.8 2.2.1 2.5 1.8.6zM326.3 80.3c.8-.3 2.4-1 2.4-1 1.5 1.5 3.2 2.1 4.9 2.3 1.7.2 3.6-.1 5.4-.4-.4-.7-.9-1.4-1.3-2.1-2.1-.1-2.4.9-.7 2-3.8-2.8-7.7-3.5-11.7-3.6.1 1-.1 2.1 1 2.8zM71.9 348.8c.1-.9.4-1.8.9-2.8-.7.7-1.5 1.3-2.2 1.9 1-.5 1.2.1 1.3.9zM74.3 344.5c-.4.4-.9.8-1.3 1.1-.1.1-.1.2-.2.3.5-.4 1-.8 1.5-1.4zM71.8 351c0-.4.1-1.4.1-2.2-.1.7-.2 1.5-.1 2.2zM99.1 316.1c2.3-1.6 4.4-4.5 5.2-7.8-3.6 1.4-4.7 4.6-5.2 7.8zM371.2 89.4c-.6-.1-1.2-.1-1.7-.2.1 0 .2.1.3.1.4.1.9.1 1.4.1zM367.6 89.3h1.9c-.8-.4-1.4-.9-1.9-1.5.3.6.4 1.2-.4 1.5h.4zM367.6 87.8c-.3-.6-.9-1.3-1.1-1.6.3.5.7 1.1 1.1 1.6zM399.8 98.1c1.4 2.4 3.2 4.6 6.3 4-1.5-2.4-4-3.9-6.3-4z"></path><path d="M17.1 419c1.1-.4 2.1-.6 2.3-1.8-.1-1.1 0-2.1.3-3-.9 1.6-1.7 3.2-2.6 4.8zM22.7 408.9c-.2.3-.3.6-.5.9.4-.5.8-.9 1.2-1.4-.2.1-.4.3-.7.5zM25.3 406.1c1-1.2 1.9-2.5 2.7-4.1-1.4 1.4-2.2 2.8-2.7 4.1zM24.8 409c0-.9.2-1.9.6-2.9-.6.8-1.3 1.5-1.9 2.2.8-.6 1.1-.1 1.3.7zM24.8 409c0 .8 0 1.5.2 2.2-.1-.4-.1-1.4-.2-2.2zM46.7 394.4c-1.7 1.1 0 5.8-1.7 6.9-2.2 3.4-5.7 5.6-8.8 8.8-1.7 1.2 1.5 2.9.7 3.5-3.8 4.6-10.2 6.2-11.2 10-1 2.8-1.8 5.3-2.6 7.8.8-1.8 1.5-3.6 2.7-5.4 1.2-1.4 2.4-2.9 3.6-4.2 1.2-1.4 2.5-2.7 3.8-4 2.5-2.6 5-5.3 7.5-7.9 5.4-7.1 9.6-12 15.8-19.7 3.9-5.2-6.5 1.2-9.8 4.2zM2.4 453.7s-1.6 1.4-2.3 2c-.2 1.5.9 1.9 1.6 2.6 1.3-2.2 2.3-4.4 3.2-6.8.9-2.4 1.4-4.9 1.7-7.7-.3 2.4.7 2.6 2 .4-.2-.9-.5-1.7-.7-2.6-3 3.6-6 7.1-5.5 12.1zM.1 461l1.8-2.4-.2-.2c-.5.8-1 1.7-1.6 2.5v.1zM355.6 180.6c2-1.3 4.2-2.4 6.4-3.3 2.2-1 4.4-1.8 6.5-2.4 2.1-.6 4.1-1 5.9-1.3 3.6-.6 6.2-.5 7 .2.6.6 0 1.6-2.4 3 .8-.4 1.6-.9 2.3-1.2 1.3-.6 2.6-1.2 3.8-1.8 2.5-1.1 4.8-1.9 7-2.7 4.4-1.4 8.2-2.3 11.5-3.3 6.8-1.8 11.9-4.1 17.1-11.4.4-.5 2.7-4.9 2.4-9.6-.4-4.7-3.4-9.7-14.2-11.3-3.9.5-8.7 1-13.9 1.7-2.6.4-5.3.8-8.1 1.2l-8.4 1.5c-5.7 1-11.2 2.4-16.4 3.8-5.1 1.5-9.8 3.2-13.5 4.9-19.2 9.6-37.6 16.6-56 24-18.3 7.4-36.5 15.1-53.9 26.2-17.4 11.2-34.7 23-52.1 35.8-4 3-8 5.9-11.9 8.8-1.9 1.5-4 2.8-5.8 4.3-1.9 1.5-3.8 3-5.6 4.5-3.7 2.9-7.5 5.9-11.1 8.8-1.9 1.4-3.6 3-5.4 4.5-1.8 1.5-3.5 3-5.3 4.6-3.5 3.1-7.1 6.1-10.5 9.2-3.4 3.2-6.7 6.4-10.1 9.7-6.8 6.4-13.1 13.4-19.5 20.5-2 2.2-3.9 4.4-5.8 6.7-1.9 2.2-3.7 4.4-5.6 6.7-1.9 2.3-3.8 4.5-5.6 6.8-.1.2-.1.5-.3.8v-.5c-.4.6-.9 1.1-1.3 1.6.2 2.5-2 4.2-4.2 6.1-.5.4-1.2 1-1.8 1.6-2.4 3-4.8 6.1-7.1 9.2.3-.2.5-.3.8-.4.7-.6 1.4-1.2 2.2-1.9.1-.1.1-.2.2-.3.4-.4.9-.8 1.3-1.1l-1.5 1.5c-.5.9-.8 1.9-.9 2.8 0 .8-.1 1.8-.1 2.2 0-.7 0-1.5.1-2.2 0-.8-.3-1.4-1.2-.9-.5.4-.9.8-1.3 1.2-1 1.4-2 2.7-3 4.1-.4.9-.6 1.8-.7 2.9-.4 1.2-1.4 1.2-2.6 1.4-6.9 9.4-13.8 19-21.1 29.4 0 0-.5 1.7-.9 3.7s-.7 4.4-.5 5.8c.6-.8 1.3-1.5 1.8-2.3-.6-.8-1.6-1.4-1.3-2.8.9-.5 2.6-1.7 2.6-1.7.3-4.9 3.7-8 7-11 .1.9.2 1.8.3 2.6-1.6 2-2.6 1.6-2-.7-1.2 5.5-3.7 9.6-6.8 13.5.1.1.1.2.2.3 3-3.1 6.3-6.2 9.5-9.2 1.6-1.5 3.2-3 4.8-4.4 1.7-1.4 3.3-2.7 4.9-4l2.7-2.1c1.1-1.3 1.9-2.6 2.8-4 .5-1.2 1.1-2.4 1.7-3.6.6-1.2 1.3-2.4 1.9-3.7 1.6-3.6 8.1-4.3 12.4-8.4.9-.5-2-2.6-.2-3.5 3.6-2.6 7.3-4.4 9.9-7.4 1.8-.9.7-5.7 2.6-6.6 3.8-2.5 14.8-7.3 10.2-2.7-7.2 6.7-11.9 11-18.2 17.2 6.4-4.9 12.5-10.4 19.1-17.2 2.1-2.2 4.1-5.1 6.4-8 2.3-2.9 4.9-5.8 7.7-8.2 2.1-1.5 4.4-2.9 6.6-4.3 1.1-.7 2.3-1.4 3.4-2.1 1.2-.7 2.4-1.4 3.5-2.1 4.7-2.8 9.5-6 13.9-10 4.2-3.8 8.5-7.3 12.8-10.8 2.1-1.7 4.3-3.4 6.4-5.1 2.2-1.6 4.4-3.1 6.6-4.7 4.4-3.1 8.8-6.1 13.1-9.2 4.5-2.8 9-5.6 13.4-8.4l6.6-4.2c2.2-1.4 4.5-2.7 6.7-4l6.7-4 3.3-2.1 3.4-2c4.5-2.6 9-5.4 13.4-8.2 4.5-2.7 9-5.5 13.5-8.6 3.7-2 7.2-3.6 10.6-5.2 1.7-.8 3.3-1.6 4.9-2.5 1.6-.8 3.2-1.6 4.7-2.5 3-1.8 6.1-3.4 9.4-4.9 3.3-1.5 6.7-2.7 10.1-3.9 6.8-2.5 14-4.3 20.7-6.6 3.4-1.1 6.8-2.1 10-3.3 1.6-.6 3.2-1.2 4.8-1.9 1.6-.6 3.1-1.3 4.6-2 3-1.4 5.9-3 8.6-4.9 2.7-1.8 5.2-3.9 7.5-6.3 2.1-1.7 3.9-3.2 5.9-4.4zM99.1 316.1c.5-3.2 1.6-6.4 5.2-7.8-.7 3.2-2.9 6.2-5.2 7.8z"></path><path d="M379 176.8c-.6.3-1.1.6-1.7 1 .6-.4 1.2-.7 1.7-1zM297.4 84.3c1.4.1 2.9.2 4.3.3-.7-.3-1.4-.7-2.1-1.4-.9-.4-1.5.4-2.2 1.1zM306.4 85c.2-.1.5-.2.7-.3-.5.1-1 .2-1.4.2.2.1.5.1.7.1zM313.2 84.4c-1.3-.3-2.6-.2-3.8-.1 1 .4 2.3.5 3.8.1zM307.1 84.7c.7-.1 1.5-.3 2.2-.4-.8-.3-1.5-.7-2.1-1.2.5.7.7 1.3-.1 1.6z"></path><path d="M305.9 81.8c.4.5.8 1 1.3 1.4-.4-.6-1-1.1-1.3-1.4zM303.1 72.9c2-1.1 4.2-2.4 6.7-2.7.8-.4.4 3.3 2 2.6 3.7-.9 6.9-2.3 10.3-2 1.6-.7 3.7 3.6 5.3 3 1.9-.3 5.2-1.5 7.5-2.6s3.4-2.1.6-2.4c-4.2-.2-7.6-.2-11-.1-3.3.1-6.6.2-10.3.4-6.1 1.1-12 2.6-18.1 3.9-1.7.2-3.3-.2-4.9-.4 2.1.6 4.2 1.2 6.6 1.8 1.6.4 3.3-.4 5.3-1.5zM265.7 82.7c.7-.5 2.2-1.4 2.2-1.4 3.5 2.5 6.9 1.3 10.4.1-.5-.6-1.1-1.2-1.6-1.8-2 .3-2.2 1.3-.4 2.1-4.2-2.1-8.1-2.3-12.1-1.6.3 1 .4 2.2 1.5 2.6z"></path><path d="M264.2 80.1c0-.1-.1-.2-.1-.3-.8.2-1.5.5-2.3.7l.1.1c.8-.2 1.6-.3 2.3-.5zM490.4 114.3c-1.8-1.1-3.6-2.1-5.4-3.2-1.8-1-3.6-2.1-5.5-3.1-1.8-1-3.7-2-5.5-3l-1.4-.7-.9-.5-1.6-.8c-8.3-4.2-16.9-8.3-25.7-12.5-9.7-4.3-19.6-4.5-28.4-5.7-3.1-.8-6.1-2.1-9-3.5-2.9-1.3-5.6-2.8-8.1-3.5-3.9-1.1-7.7-2-11.3-2.4-3.7-.4-7.2-.6-10.6-.6 7.4 1.2 13 1.6 21.2 3.5 5.4 1.4-5.1 3.5-8.9 3.5-1.7.3-3-4.2-4.8-3.8-3.3-.8-6.8-.1-10.6.2-1.7.5-.7-3.1-1.6-2.9-2.5-.1-5 .7-7.2 1.5s-4.1 1.3-5.5.5c-2.2-1-4.3-2-6.3-2.9-1.3-.4-2.6-.8-4-.9-.9.2-1.9.3-2.8.5-3.4.6-7 1.2-10.6 1.6-3.6.5-7.3 1-10.8 1.4 0 .1 0 .2.1.3 4 .1 7.9.8 11.7 3.6-1.7-1.1-1.3-2.1.7-2 .4.7.9 1.4 1.3 2.1-1.8.3-3.7.5-5.4.4-1.7-.1-3.4-.7-4.9-2.3 0 0-1.6.7-2.4 1-1.1-.6-.9-1.8-1-2.8-.8 0-1.6 0-2.4.1.8 1 2.4 2.2 3.8 3.2s2.7 1.7 2.7 1.7c5 .4 9.8 1.2 14.5 1.9 4.7.9 9.3 1.7 13.8 2.8.8-.6 1.5-1.3 2.3-.7.6.8 1.2 1.3 1.9 1.7 1.3.3 2.6.7 3.9 1h1.4c.8-.2.7-.9.4-1.5-.4-.5-.8-1.1-1.1-1.6.2.4.8 1 1.1 1.6.5.6 1.1 1.1 1.9 1.5.6 0 1.2.1 1.7.2h-1.4c-.1 0-.2-.1-.3-.1h-2.3c-.2.1-.5.1-.7.2 3 .9 5.9 1.7 8.8 2.6.7.1 1.4.2 1.9.2 2.3.1 4.5.2 5.4 2.2.5.2 1 .3 1.6.5-.1-.1-.2-.3-.2-.4.2.2.4.3.5.5 2.2.8 4.3 1.6 6.5 2.4 4.3 1.5 8.4 3.4 12.8 5.1 13.2 5.7 25.6 11.4 37.8 17.7 3.1 1.6 6.1 3.2 9.1 4.9 1.5.9 3 1.7 4.5 2.6l2.3 1.3c.8.5 1.3.8 1.8 1.1 4.2 2.6 8.3 5.3 11.8 8.2-.5.7-1 1.5-1.5 2.4-1.6 2.5-3.2 4.8-4.8 7-.8 1.1-1.6 2.1-2.3 3.1-1.2 1.6-2.3 3.2-3.5 4.8-4.8 6.5-9.8 12.7-15 18.5-10.4 11.7-19.1 23.6-28.9 34.8-9.7 11.1-20.6 21.5-34.8 29.1-5.3 3-11.6 8.6-17.8 14.3-6.1 5.7-12.1 11.5-16.4 15.2-3.9 7.2-2 12.7 1.1 16.4 3.1 3.7 7.5 5.6 8.1 5.7 8.1 2.3 12.5.6 17.5-2.5 4.7-3 9.8-7.2 19.1-11.1-5.1 1.9-4.5-1.2-.7-5.3 4-4.4 11.5-10 19.5-11.5 11.8-1.9 20.5-10.3 28-20.1 7.6-9.9 14-21.2 22.5-29.9 4.3-4.3 7.4-9.9 11.6-15.8 6.3-7.2 11.7-14.9 16.5-22.8l1.8-3.1 3.2-5.7c2.2-3.8 4.2-7.7 6.2-11.6 3.9-7.7 7.7-15.4 11.4-23-7-4.1-14.2-8.4-21.4-12.8zm-90.6-16.2c2.3.1 4.8 1.6 6.3 4-3.1.6-4.9-1.6-6.3-4zM391.9 276c.5-.2.9-.4 1.5-.6-.6.2-1 .4-1.5.6z"></path></svg></div>
+                            <div class="info-text"><svg version="1.1" x="0" y="0" viewBox="0 0 512 162" xml:space="preserve" class="icon"><path d="M22.3 41.8c-.4 1-.9 2-1.7 2.9-.8.9-1.7 1.4-2.8 1.4-3.8 0-5.7-3.6-5.7-10.9 0-3.5.7-7.4 2-11.9 1.4-4.5 3-6.7 4.8-6.7.7 0 1.3.4 1.8 1.1 1 1.4 1.5 4.7 1.5 10l8 .7c-.1-3.2-.3-6.2-.7-8.9-.2-1.7-.5-3.2-1-4.3-.5-1.1-1.1-2.2-1.8-3.3-1.5-2.2-3.9-3.3-7.2-3.3-2.7 0-5.1.9-7.2 2.8-2.1 1.8-3.7 4.2-4.9 7C5 24.1 3.8 30 3.8 36.1c0 5.2 1.2 9.5 3.6 12.9 2.4 3.4 5.9 5.1 10.3 5.1 3.8 0 6.8-1.3 8.9-4 2.1-2.7 3.7-6.6 4.8-11.7l-7.9-.6c-.4 1.6-.9 3-1.2 4zM43.6 53.3c-.2-3.4-.3-9.3-.3-17.7 0-8.4.3-17.8.9-28.3L37 6.8c-.7 10.4-1 19.6-1 27.5 0 7.9.1 14 .2 18.3l7.4.7zM50.8 18.5l7 .9.6-6.9-6.9-.8zM51 52.3l7 .7V23.3l-7-.7zM72.9 46.8c-1.5 0-2.3-1.9-2.3-5.6 0-2.2.3-4.7.8-7.3.5-2.7 1.4-4 2.5-4 .6 0 1.1.5 1.4 1.4.4 1 .6 1.9.6 2.8 0 .9 0 1.7-.1 2.2l5.9.6c.4-.9.6-1.9.6-3.1 0-2.8-.8-5.4-2.3-7.7-1.5-2.3-3.4-3.5-5.7-3.5-2.3 0-4.1.7-5.6 2.1-1.5 1.4-2.6 3.2-3.3 5.4-1.3 4-2 8-2 12.1 0 3.8.9 6.6 2.8 8.5 1.9 1.9 4 2.8 6.4 2.8 2.4 0 4.4-.9 6-2.7 1.7-1.8 3.1-4.2 4.2-7.2l-4.6-3.3c-2.4 4.3-4.1 6.5-5.3 6.5zM108.8 25.7l-5-4.3c-2.1 5-5.4 10.1-9.7 15.3 0-9.4.3-19.1.9-29.3l-7.3-.6c-.6 9.4-.9 18.3-.9 26.7s.1 14.8.2 19.1l7.3.7c-.2-3.5-.2-7.5-.2-12.1 4.5 4.8 7.9 8.9 10.2 12.3L109 49c-1.9-3.3-4.5-6.8-7.7-10.5 3.2-4.2 5.7-8.5 7.5-12.8zM143.2 48.5c1.8-3.5 2.8-7.5 2.8-12 0-3.3-.7-6.3-2-9.1-.7-1.4-1.7-2.5-3.1-3.4-1.3-.8-2.9-1.3-4.8-1.3s-3.5.6-5.1 1.8c-1.5 1.2-2.7 2.7-3.5 4.6-1.6 3.7-2.4 7.4-2.4 11.3 0 8.9 3.5 13.3 10.4 13.3 3.3.1 5.9-1.7 7.7-5.2zm-5.4-4.4c-.6 2.6-1.4 3.9-2.3 3.9-2.1 0-3.1-2.3-3.1-7 0-2.6.3-5.3 1-8.2.7-2.8 1.6-4.2 2.7-4.2 1.7 0 2.6 2.6 2.6 7.9.1 2.4-.3 4.9-.9 7.6zM162.4 22.6c-2.4 0-4.9 2.4-7.3 7.2-.5-2.4-.8-3.7-.9-4l-4.6-.5c-.2 3.5-.4 7.5-.4 11.9s.2 9.5.7 15.4l7.3.7c-.2-4.4-.4-7.5-.5-9.2.2-3.2.9-6.4 1.9-9.8 1-3.3 1.9-5 2.5-5 1.4 0 2 2.4 2 7.2 0 4.8-.2 9.6-.7 14.3l7.3.7c.5-5.4.8-10.5.8-15.3.1-9-2.6-13.6-8.1-13.6zM193.6 38.4c-2.5 1.8-3.8 4-3.8 6.5s.7 4.5 2 5.8c1.3 1.3 3 2 5 2s4-.6 6-1.7l.5 2 5.2.4c.5-7.6.7-13.5.7-17.8 0-4.3-.7-7.6-2-10-1.3-2.3-3.4-3.5-6.2-3.5-2.8 0-5.1 1.1-6.8 3.4-1.7 2.3-2.9 5-3.5 8.2l5.7.6c.3-1.4.8-2.7 1.4-3.8.6-1.1 1.4-1.6 2.1-1.6 1.6 0 2.4 1.6 2.4 4.9v1.7c-3.3.2-6.2 1.1-8.7 2.9zm8.3 8.2c-1.2.5-2.3.7-3.4.7-1.6 0-2.4-.7-2.4-2 0-.9.5-1.7 1.5-2.5s2.5-1.3 4.4-1.5l-.1 5.3zM243.8 40.3c-2.3 4.3-4 6.5-5.3 6.5-1.5 0-2.3-1.9-2.3-5.6 0-2.2.3-4.7.8-7.3.5-2.7 1.4-4 2.5-4 .6 0 1.1.5 1.4 1.4.4 1 .6 1.9.6 2.8 0 .9 0 1.7-.1 2.2l5.9.6c.4-.9.6-1.9.6-3.1 0-2.8-.8-5.4-2.3-7.7-1.5-2.3-3.4-3.5-5.7-3.5-2.3 0-4.1.7-5.6 2.1-1.5 1.4-2.6 3.2-3.3 5.4-1.3 4-2 8-2 12.1 0 3.8.9 6.6 2.8 8.5 1.9 1.9 4 2.8 6.4 2.8 2.4 0 4.4-.9 6-2.7 1.7-1.8 3.1-4.2 4.2-7.2l-4.6-3.3zM266.1 24.1c-1.3-.8-2.9-1.3-4.8-1.3s-3.5.6-5.1 1.8c-1.5 1.2-2.7 2.7-3.5 4.6-1.6 3.7-2.4 7.4-2.4 11.3 0 8.9 3.5 13.3 10.4 13.3 3.3 0 5.9-1.7 7.7-5.2 1.8-3.5 2.8-7.5 2.8-12 0-3.3-.7-6.3-2-9.1-.7-1.4-1.7-2.6-3.1-3.4zm-3 20c-.6 2.6-1.4 3.9-2.3 3.9-2.1 0-3.1-2.3-3.1-7 0-2.6.3-5.3 1-8.2.7-2.8 1.6-4.2 2.7-4.2 1.7 0 2.6 2.6 2.6 7.9 0 2.4-.3 4.9-.9 7.6zM300.7 22.4c-2.1 0-4.2 1.6-6.4 4.7-1.3-1.7-3.2-2.6-5.8-2.6-2.1 0-4.3 1.7-6.5 5.1-.5-2.9-.8-5-1.1-6.1l-5.1-.4c-.2 4.2-.4 8.7-.4 13.5 0 4.8.2 10.1.7 15.9l7.3.7c-.3-4.1-.5-8-.6-11.8.5-2.5 1.2-4.9 2.3-7.2 1.1-2.3 1.9-3.4 2.6-3.4 1 0 1.5 1.9 1.5 5.6 0 3.8-.2 8.6-.5 14.4l7.3.7c.2-4.1.4-8.7.5-13.8.2-2.3.8-4.3 1.6-6.2.8-1.9 1.5-2.8 2-2.8 1.3 0 2 2 2 6.1s-.4 9.9-1.2 17.7l7.2.6c.8-6.9 1.2-12.9 1.2-17.7 0-8.7-2.9-13-8.6-13zM333.3 47.1c2-3.9 3.1-8.3 3.1-13.1 0-3.2-.7-5.8-2-7.8s-3.3-3-5.7-3c-2.4 0-4.5 1.3-6.1 3.8l.2-5.1-6.4-.7c-.6 6.1-.9 13.3-.9 21.7s.1 16.3.3 23.7l7.3.7c-.2-4.3-.4-9.2-.4-14.9 1.2.4 2.6.6 4.3.6 2.1 0 4.3-2 6.3-5.9zm-5.7-3.7c-1 2.3-2.1 3.4-3.3 3.4-.6 0-1.2-.4-1.9-1.3 0-4.5 0-7.8.1-9.9.7-2 1.5-3.6 2.1-4.6.7-1.1 1.5-1.6 2.4-1.6.5 0 1 .6 1.4 1.9.4 1.3.6 3 .6 5.3.2 2.2-.4 4.5-1.4 6.8zM356.8 48.5c1.8-3.5 2.8-7.5 2.8-12 0-3.3-.7-6.3-2-9.1-.7-1.4-1.7-2.5-3.1-3.4-1.3-.8-2.9-1.3-4.8-1.3s-3.5.6-5.1 1.8c-1.5 1.2-2.7 2.7-3.5 4.6-1.6 3.7-2.4 7.4-2.4 11.3 0 8.9 3.5 13.3 10.4 13.3 3.3.1 5.9-1.7 7.7-5.2zm-5.4-4.4c-.6 2.6-1.4 3.9-2.3 3.9-2.1 0-3.1-2.3-3.1-7 0-2.6.3-5.3 1-8.2.7-2.8 1.6-4.2 2.7-4.2 1.7 0 2.6 2.6 2.6 7.9 0 2.4-.3 4.9-.9 7.6zM370.8 53.3c-.2-4.4-.4-7.5-.5-9.2.2-3.2.9-6.4 1.9-9.8 1-3.3 1.9-5 2.5-5 1.4 0 2 2.4 2 7.2 0 4.8-.2 9.6-.7 14.3l7.3.7c.5-5.4.8-10.5.8-15.3 0-9.1-2.7-13.6-8.2-13.6-2.4 0-4.9 2.4-7.3 7.2-.5-2.4-.8-3.7-.9-4l-4.6-.5c-.2 3.5-.4 7.5-.4 11.9s.2 9.5.7 15.4l7.4.7zM402 52.1c1.4-.9 2.5-1.8 3.3-2.7.7-1 1.5-2.1 2.3-3.5l-4.7-2.8c-1.8 3-3.5 4.5-5 4.5-.6 0-1.2-.5-1.6-1.5-.5-1-.7-2.3-.9-4 5.2-.7 9.5-1.6 12.8-2.5 0-1.6-.1-3.4-.2-5.4-.1-1.5-.3-2.6-.5-3.4-.2-.8-.5-1.8-1-3s-1-2.2-1.6-2.8c-.6-.6-1.4-1.2-2.4-1.7s-2.3-.8-3.9-.8-3.2.6-4.8 1.8c-1.5 1.2-2.7 2.8-3.6 4.7-1.5 3.7-2.3 7.7-2.3 12 0 3.8.9 6.7 2.7 9 1.8 2.2 4 3.3 6.6 3.3 1.7.1 3.4-.3 4.8-1.2zm-5.3-20.7c.7-1.8 1.5-2.7 2.4-2.7 1.3 0 2 2.6 2 7.8-1.6.4-3.5.8-5.7 1.3.2-2.5.6-4.6 1.3-6.4zM419.9 53.3c-.2-4.4-.4-7.5-.5-9.2.2-3.2.9-6.4 1.9-9.8 1-3.3 1.9-5 2.5-5 1.4 0 2 2.4 2 7.2 0 4.8-.2 9.6-.7 14.3l7.3.7c.5-5.4.8-10.5.8-15.3 0-9.1-2.7-13.6-8.2-13.6-2.4 0-4.9 2.4-7.3 7.2-.5-2.4-.8-3.7-.9-4l-4.6-.5c-.2 3.5-.4 7.5-.4 11.9s.2 9.5.7 15.4l7.4.7zM449.2 14.4l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3-.1 5.9-.2 12.4-.2 19.7l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.3-4 .5-7.9.7-12zM473.8 52.3l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.1-3.8.3-7.8.6-11.9l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3 0 5.8-.1 12.4-.1 19.6zM506.3 27.5c-.7-1.4-1.7-2.5-3.1-3.4-1.3-.8-2.9-1.3-4.8-1.3s-3.5.6-5.1 1.8c-1.5 1.2-2.7 2.7-3.5 4.6-1.6 3.7-2.4 7.4-2.4 11.3 0 8.9 3.5 13.3 10.4 13.3 3.3 0 5.9-1.7 7.7-5.2 1.8-3.5 2.8-7.5 2.8-12 0-3.3-.7-6.4-2-9.1zm-6.2 16.6c-.6 2.6-1.4 3.9-2.3 3.9-2.1 0-3.1-2.3-3.1-7 0-2.6.3-5.3 1-8.2.7-2.8 1.6-4.2 2.7-4.2 1.7 0 2.6 2.6 2.6 7.9.1 2.4-.2 4.9-.9 7.6zM46 112.3c-2.8 0-5.1 1.1-6.8 3.4s-2.9 5-3.5 8.2l5.7.6c.3-1.4.8-2.7 1.4-3.8.6-1.1 1.4-1.6 2.1-1.6 1.6 0 2.4 1.6 2.4 4.9v1.7c-3.3.1-6.1 1-8.6 2.9-2.5 1.8-3.8 4-3.8 6.5s.7 4.5 2 5.8c1.3 1.3 3 2 5 2s4-.6 6-1.7l.5 2 5.2.4c.5-7.6.7-13.5.7-17.8s-.7-7.6-2-10c-1.4-2.4-3.5-3.5-6.3-3.5zm.9 24.3c-1.2.5-2.3.7-3.4.7-1.6 0-2.4-.7-2.4-2 0-.9.5-1.7 1.5-2.5s2.5-1.3 4.4-1.5l-.1 5.3zM72.4 96.6c.1 3.6.2 6.9.2 9.7l-.1 7.7c-2.1-1-4-1.5-5.9-1.5-2.1 0-3.9 2-5.5 6.1s-2.4 8-2.4 11.8c0 3.8.6 6.7 1.9 8.6 1.2 2 3.5 3 6.6 3 2.1 0 4-1.8 5.8-5.3.1 2.2.2 4.2.4 5.8l5.5.5c.7-12.2 1-22.1 1-29.8s0-13-.1-16l-7.4-.6zm.2 29.2c-.7 2.8-1.6 5.1-2.5 6.9-.9 1.8-1.6 2.7-2.2 2.7-1.4 0-2.1-1.4-2.1-4.3s.4-5.7 1.1-8.3 1.6-4 2.6-4 2 .4 3.1 1.2v5.8zM97.8 96.6c.1 3.6.2 6.9.2 9.7l-.1 7.7c-2.1-1-4-1.5-5.9-1.5-2.1 0-3.9 2-5.5 6.1s-2.4 8-2.4 11.8c0 3.8.6 6.7 1.9 8.6 1.2 2 3.5 3 6.6 3 2.1 0 4-1.8 5.8-5.3.1 2.2.2 4.2.4 5.8l5.5.5c.7-12.2 1-22.1 1-29.8s0-13-.1-16l-7.4-.6zm.2 29.2c-.7 2.8-1.6 5.1-2.5 6.9-.9 1.8-1.6 2.7-2.2 2.7-1.4 0-2.1-1.4-2.1-4.3s.4-5.7 1.1-8.3 1.6-4 2.6-4 2 .4 3.1 1.2v5.8zM127.1 142.3l7.1.7v-29.7l-7.1-.7zM127 108.5l6.9.9.6-6.9-6.9-.8zM151.3 104.4l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3-.1 5.9-.2 12.4-.2 19.7l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.2-4 .4-7.9.7-12zM184.1 104.4l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3-.1 5.9-.2 12.4-.2 19.7l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.2-4 .4-7.9.7-12zM205.2 114.1c-1.3-.8-2.9-1.3-4.8-1.3s-3.5.6-5.1 1.8-2.7 2.7-3.5 4.6c-1.6 3.7-2.4 7.4-2.4 11.3 0 8.9 3.5 13.3 10.4 13.3 3.3 0 5.9-1.7 7.7-5.2 1.8-3.5 2.8-7.5 2.8-12 0-3.3-.7-6.3-2-9.1-.7-1.4-1.7-2.6-3.1-3.4zm-3 20c-.6 2.6-1.4 3.9-2.3 3.9-2.1 0-3.1-2.3-3.1-7 0-2.6.3-5.3 1-8.2.7-2.8 1.6-4.2 2.7-4.2 1.7 0 2.6 2.6 2.6 7.9 0 2.4-.3 4.9-.9 7.6zM239.7 104.4l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3-.1 5.9-.2 12.4-.2 19.7l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.3-4 .4-7.9.7-12zM260.5 113.4c-1.8 0-3.7 1.2-5.6 3.5 0-6.7-.2-13-.5-18.8l-7.3-.7c.3 5.3.4 12.4.4 21.1s-.3 16.7-.8 23.8l7.3.7c.3-5.2.5-9.9.6-14.1 1.5-5.8 3-8.7 4.3-8.7 1.1 0 1.7 1.1 1.7 3.3 0 5.9-.1 11.8-.4 17.9l7.2.7c.5-6.5.7-12.8.7-18.8 0-3.3-1-6-3-8.2-1.3-1.1-2.8-1.7-4.6-1.7zM291.5 124.3c-.1-1.5-.3-2.6-.5-3.4-.2-.8-.5-1.8-1-3s-1-2.2-1.6-2.8c-.6-.6-1.4-1.2-2.4-1.7s-2.3-.8-3.9-.8-3.2.6-4.8 1.8-2.7 2.8-3.6 4.7c-1.5 3.7-2.3 7.7-2.3 12 0 3.8.9 6.7 2.7 9 1.8 2.2 4 3.3 6.6 3.3 1.8 0 3.4-.4 4.8-1.3s2.5-1.8 3.3-2.7c.7-1 1.5-2.1 2.3-3.5l-4.7-2.8c-1.8 3-3.5 4.5-5 4.5-.6 0-1.2-.5-1.6-1.5s-.7-2.3-.9-4c5.2-.7 9.5-1.6 12.8-2.5.1-1.5 0-3.3-.2-5.3zm-12.4 3.4c.1-2.4.5-4.5 1.3-6.3.7-1.8 1.5-2.7 2.4-2.7 1.3 0 2 2.6 2 7.8-1.7.3-3.6.7-5.7 1.2zM321.6 104.4l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3-.1 5.9-.2 12.4-.2 19.7l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.3-4 .4-7.9.7-12zM347.1 124.3c-.1-1.5-.3-2.6-.5-3.4-.2-.8-.5-1.8-1-3s-1-2.2-1.6-2.8c-.6-.6-1.4-1.2-2.4-1.7s-2.3-.8-3.9-.8-3.2.6-4.8 1.8-2.7 2.8-3.6 4.7c-1.5 3.7-2.3 7.7-2.3 12 0 3.8.9 6.7 2.7 9 1.8 2.2 4 3.3 6.6 3.3 1.8 0 3.4-.4 4.8-1.3s2.5-1.8 3.3-2.7c.7-1 1.5-2.1 2.3-3.5l-4.7-2.8c-1.8 3-3.5 4.5-5 4.5-.6 0-1.2-.5-1.6-1.5s-.7-2.3-.9-4c5.2-.7 9.5-1.6 12.8-2.5 0-1.5-.1-3.3-.2-5.3zm-12.5 3.4c.1-2.4.5-4.5 1.3-6.3.7-1.8 1.5-2.7 2.4-2.7 1.3 0 2 2.6 2 7.8-1.6.3-3.5.7-5.7 1.2zM377.3 112.4c-2.1 0-4.2 1.6-6.4 4.7-1.3-1.7-3.2-2.6-5.8-2.6-2.1 0-4.3 1.7-6.5 5.1-.5-2.9-.8-5-1.1-6.1l-5.1-.4c-.2 4.2-.4 8.7-.4 13.5 0 4.8.2 10.1.7 15.9l7.3.7c-.3-4.1-.5-8-.6-11.8.5-2.5 1.2-4.9 2.3-7.2 1.1-2.3 1.9-3.4 2.6-3.4 1 0 1.5 1.9 1.5 5.6 0 3.8-.2 8.6-.5 14.4l7.3.7c.2-4.1.4-8.7.5-13.8.2-2.3.8-4.3 1.5-6.2s1.5-2.8 2-2.8c1.3 0 2 2 2 6.1s-.4 9.9-1.2 17.7l7.2.6c.8-6.9 1.2-12.9 1.2-17.7.1-8.7-2.8-13-8.5-13zM405.2 113.3c-2.4 0-4.5 1.3-6.1 3.8l.2-5.1-6.4-.7c-.6 6.1-.9 13.3-.9 21.7s.1 16.3.3 23.7l7.3.7c-.2-4.3-.4-9.2-.4-14.9 1.2.4 2.6.6 4.3.6 2.3 0 4.5-2 6.5-5.9 2-3.9 3.1-8.3 3.1-13.1 0-3.2-.7-5.8-2-7.8-1.5-2.1-3.4-3-5.9-3zm-1 20.1c-1 2.3-2.1 3.4-3.3 3.4-.6 0-1.2-.4-1.9-1.3 0-4.5 0-7.8.1-9.9.7-2 1.5-3.6 2.1-4.6.7-1.1 1.5-1.6 2.4-1.6.5 0 1 .6 1.4 1.9.4 1.3.6 3 .6 5.3.1 2.2-.4 4.5-1.4 6.8zM418.7 96.8c-.6 10.4-.9 19.6-.9 27.5 0 7.9.1 14 .2 18.3l7.3.7c-.2-3.4-.3-9.3-.3-17.7 0-8.4.3-17.8.9-28.3l-7.2-.5zM441.7 112.3c-2.8 0-5.1 1.1-6.8 3.4-1.7 2.3-2.9 5-3.5 8.2l5.7.6c.3-1.4.8-2.7 1.4-3.8.6-1.1 1.4-1.6 2.1-1.6 1.6 0 2.4 1.6 2.4 4.9v1.7c-3.3.1-6.1 1-8.6 2.9-2.5 1.8-3.8 4-3.8 6.5s.7 4.5 2 5.8c1.3 1.3 3 2 5 2s4-.6 6-1.7l.5 2 5.2.4c.5-7.6.7-13.5.7-17.8s-.7-7.6-2-10c-1.4-2.4-3.5-3.5-6.3-3.5zm.9 24.3c-1.2.5-2.3.7-3.4.7-1.6 0-2.4-.7-2.4-2 0-.9.5-1.7 1.5-2.5s2.5-1.3 4.4-1.5l-.1 5.3zM466.5 104.4l-7.4-.7c-.2 5.9-.4 10.3-.5 13.4-2.1.3-3.7.6-4.7.8l.9 5.1c1.7-.2 2.9-.3 3.5-.3-.1 5.9-.2 12.4-.2 19.7l7.3.7c0-9.8.1-16.7.2-20.8 1.1 0 2.6-.1 4.6-.1v-5.9c-1.9 0-3.4 0-4.4.1.2-4 .4-7.9.7-12zM492 124.3c-.1-1.5-.3-2.6-.5-3.4-.2-.8-.5-1.8-1-3s-1-2.2-1.6-2.8c-.6-.6-1.4-1.2-2.4-1.7s-2.3-.8-3.9-.8-3.2.6-4.8 1.8-2.7 2.8-3.6 4.7c-1.5 3.7-2.3 7.7-2.3 12 0 3.8.9 6.7 2.7 9 1.8 2.2 4 3.3 6.6 3.3 1.8 0 3.4-.4 4.8-1.3s2.5-1.8 3.3-2.7c.7-1 1.5-2.1 2.3-3.5l-4.7-2.8c-1.8 3-3.5 4.5-5 4.5-.6 0-1.2-.5-1.6-1.5-.5-1-.7-2.3-.9-4 5.2-.7 9.5-1.6 12.8-2.5 0-1.5-.1-3.3-.2-5.3zm-12.5 3.4c.1-2.4.5-4.5 1.3-6.3.7-1.8 1.5-2.7 2.4-2.7 1.3 0 2 2.6 2 7.8-1.6.3-3.5.7-5.7 1.2z"></path></svg></div>
+                        </div>
+					</div>
+				</div>
+      </div>
+      <div class="col-sm-9">
+        <div class="">
+              <div class="container">
+                  <div class="tab-content">
+                        <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel"><br>
+                        	<h5 class="card-title">New Salary Template</h5>
+                            <div class="main-card mb-3 card">
+                                <div class="card-body">
+
+                                    <form class="" id="myForm">
+
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <div class="position-relative form-group">
+                                                  <label for="exampleEmail11" class="">Template Name</label>
+                                                  <input name="template_name" id="template_name" type="text" class="form-control">
+                                                  <p id="template_name_error" class="error_label"></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="position-relative form-group">
+                                                   <label for="description" class="">Description</label>
+                                                      <input name="description" id="description" type="text" class="form-control">
+                                                      <p id="description_error" class="error_label"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                         <div class="card" style="padding: 20px;">
+                                          <div class="form-row">
+                                            <div class="col-md-4">
+                                               	Annual CTC
+                                            </div>
+                                            <div class="col-md-4">
+                                              <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <div class="input-group-text">
+                                                                <i class="fa fas fa-dollar-sign"></i>
+                                                            </div>
+                                                        </div>
+                                                        <input id="annual_ctc" class="form-control input-mask-trigger" oninput="annulactc(event)" type="number"data-inputmask="'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true" im-insert="true" style="text-align: right;">
+                                                        <i style="margin-top: 10px;margin-left: 5px;"><b>Per Year</b></i>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                        <br>
+
+        
+                                     <div class="table">
+                                     	<table>
+                                     		<thead>
+                                     			<tr>
+                                     				<th>SALARY COMPONENTS</th>
+                                                    <th>CALCULATION TYPE</th>
+                                                    <th>AMOUNT MONTHLY</th>
+                                                    <th>AMOUNT ANNUALLY	</th>
+                                     			</tr>
+                                     		</thead>
+                                             <tbody id="Earnings_tbody">
+                                               <tr>
+                                                 <td colspan="5" class="row-group font-semibold font-xmedium"><b>Earnings</b></td>            
+                                               </tr>
+                                            </tbody>
+
+                                            <tbody id="Dashboards">
+                                            </tbody>
+                                            <tbody id="Deduction_tbody">
+                                                <tr>
+                                                 <td colspan="5" class="row-group font-semibold font-xmedium"><b>Deduction</b></td>            
+                                                      </tr>
+                                                    </tbody>
+                                                    <tbody id="deduction_dashboards">
+
+                                                    </tbody>
+
+                                                  <tbody>
+                                                    <tr>
+                                                    <td width="34%">
+                                                        <div id="ember80" class="ember-view">
+                                                            <div>
+                                                               <span><b>Cost to Company</b></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td width="28%">
+
+                                                    </td>
+                                                    <td width="18%" class="text-right">
+                                                        <b id="annulactc_output/div">   0 </b>
+                                                    </td>
+                                                    <td width="20%" class="text-right">
+                                                         <b id="annulactc_output">   0 </b>
+                                                    </td>
+                                                    <td class="text-right">
+                                                    </td>
+                                                </tr>
+                                                                                      
+                                          </tbody>
+                                     	</table>
+                                     </div>
+                                    </div>
+
+                                     <div class="row">
+                                       <div class="col-sm-1">
+                                            <a class="mt-2 btn btn-primary" style="color:white" onclick="submit()">Save</a>
+                                       </div>
+                                       <div class="col-sm-1">
+                                            <button class="mt-2 btn btn">
+                                             <a style="color:black" href="{% url 'administrations:salary_template' %}">Cancel</a>
+                                            </button>
+                                       </div>
+                                     </div>
+
+                                    </form>
+                                </div>
+                            </div>
+      </div>
+    </div>
+
+{% endblock content %}
+{% block script %}
+    <script>
+      let annulactc_value = '';
+      let earning_type_map_count = '{{ earning_type_map|length }}';
+      let deduction_type_map_count = '{{ deduction_list|length }}'
+      $(document).ready(function() {
+            $('ul li').click(function(e) 
+            { 
+            remove(e)
+            });
+        });
+
+var deductionDivCount = $("#deduction_dashboards > tr").length;
+var EarningsDivCount = $("#Dashboards > tr").length;
+if(deductionDivCount == 0){
+   document.getElementById('Deduction_tbody').style.display ='none';
+}
+if(EarningsDivCount == 0){
+   document.getElementById('Earnings_tbody').style.display ='none';
+}
+
+function remove(e){
+    if(e.currentTarget.className == 'earings_menu'){
+         let dynamicId = e.target.id + e.currentTarget.className;
+         let earings_id = e.target.dataset.earings_id;
+         var create_tr = document.createElement('tr');
+         let calculation_type = e.target.dataset.calculation_type;
+         create_tr.setAttribute("id", dynamicId);
+         if(calculation_type == 2){
+         create_tr.innerHTML ='<td width="34%"><div id="ember80" class="ember-view"><div><span>'+e.target.dataset.title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group">Fixed amount</div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: 0px;"><div class="input-group"><input data-type="earnings" data-earnings_id="'+earings_id+'" data-calculation_type="'+calculation_type+'" class="form-control input-mask-trigger" value="0" type="number" id="'+e.target.id+'input" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun(\''+e.target.id+'\',\''+e.currentTarget.id+'\',\''+e.currentTarget.className+'\',\''+e.target.dataset.title+'\',\''+e.target.dataset.calculation_type+'\',\''+earings_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>';
+         document.getElementById('Dashboards').appendChild(create_tr);
+         }else if(calculation_type == 1){
+            create_tr.innerHTML ='<td width="34%"><div id="ember80" class="ember-view"><div><span>'+e.target.dataset.title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group"> <input class="form-control input-mask-trigger earnings" data-type="earnings" data-earnings_id="'+earings_id+'" data-calculation_type="'+calculation_type+'" id="'+e.target.id+'input" value="50"  type="number" oninput="getInput(\''+e.target.id+'\')"><div class="input-group-prepend input-group-prepend_01" onclick="changeValue(\''+e.target.id+'\')"><div class="input-group-text"><i class="fa fas">% of Basic</i></div></div></div></div></div></div></td><td width="18%" class="text-right"> <div class="col-sm-12" style="margin-top: -14px;"><div class="input-group"><input class="form-control input-mask-trigger" value="0" id="'+e.target.id+'amount_monthly"  disabled type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right" id="'+e.target.id+'amount_annually">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun(\''+e.target.id+'\',\''+e.currentTarget.id+'\',\''+e.currentTarget.className+'\',\''+e.target.dataset.title+'\',\''+e.target.dataset.calculation_type+'\',\''+earings_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>';
+            document.getElementById('Dashboards').appendChild(create_tr);
+         }
+         $('#'+e.target.id).remove();
+         var divCount = $("#Dashboards > tr").length;
+         if(divCount != 0){
+          document.getElementById('Earnings_tbody').style.display ='block';
+         }
+         if(divCount == earning_type_map_count){
+          document.getElementById('earnings_error').innerHTML += '<div id="earnings'+e.currentTarget.className+'">You have added all the active earnings to the template</div>'
+         }
+         
+    }else if(e.currentTarget.className == 'deduction_menu'){
+        let deduction_id = e.target.dataset.deduction_id
+        var create_tr = document.createElement('tr');
+        let dynamicId = e.target.id + e.currentTarget.className;
+        let calculation_type = e.target.dataset.calculation_type;
+        create_tr.setAttribute("id", dynamicId);
+        create_tr.innerHTML= '<td width="34%"><div id="ember80" class="ember-view"><div><span>'+e.target.dataset.title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group" id="'+e.target.id+'type"><select onchange="getType(event,\''+e.target.id+'\',\''+e.currentTarget.id+'\',\''+e.currentTarget.className+'\',\''+deduction_id+'\',\''+dynamicId+'\',\''+e.target.dataset.title+'\')" data-type="deduction" data-deduction_id="'+deduction_id+'" data-calculation_type="1" class="search-select form-control"><option value="1">Fixed Amount</option><option value="2">Basic</option></select></div></div></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: -16px;"><div class="input-group"><input data-type="deduction" data-deduction_id="'+deduction_id+'" data-sub_type="deduction_fixedamount" class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun(\''+e.target.id+'\',\''+e.currentTarget.id+'\',\''+e.currentTarget.className+'\',\''+e.target.dataset.title+'\',\''+e.target.dataset.calculation_type+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>';
+        document.getElementById('deduction_dashboards').appendChild(create_tr);
+         $('#'+e.target.id).remove();
+         var divCount = $("#deduction_dashboards > tr").length;
+         if(divCount != 0){
+          document.getElementById('Deduction_tbody').style.display ='block';
+         }
+         if(divCount == deduction_type_map_count){
+          document.getElementById('deduction_error').innerHTML += '<div id="deduction'+e.currentTarget.className+'">You have added all the active earnings to the template</div>'
+         }
+    }
+}
+
+function retrun(targetId,currentTargetId,className,title,calculation_type,earings_id){
+    document.getElementById(currentTargetId).innerHTML = '<a id="'+targetId+'" data-title="'+title+'" data-calculation_type="'+calculation_type+'" data-earings_id="'+earings_id+'">'+title+'</a>'
+     $('#'+targetId+className).remove();
+     if(className == 'earings_menu'){
+         var divCount = $("#Dashboards > tr").length;
+         if(divCount == 0){
+          document.getElementById('Earnings_tbody').style.display ='none';
+         }
+         if(divCount < earning_type_map_count){
+             if(document.getElementById('earnings'+className)){
+                 document.getElementById('earnings'+className).remove()
+             }
+         }
+     }else if(className == 'deduction_menu'){
+         var divCount = $("#Dashboards > tr").length;
+         var divCount = $("#deduction_dashboards > tr").length;
+         if(divCount == 0){
+          document.getElementById('Deduction_tbody').style.display ='none';
+         }
+         if(divCount < deduction_type_map_count){
+             if(document.getElementById('deduction'+className)){
+                 document.getElementById('deduction'+className).remove()
+             }
+         }
+     }
+}
+
+function getInput(targetId){
+   let value = document.getElementById(targetId+'input').value;
+}
+
+function annulactc(e){
+   annulactc_value = e.target.value
+   document.getElementById('annulactc_output').innerHTML = Math.round(annulactc_value);
+   document.getElementById('annulactc_output/div').innerHTML = parseInt(annulactc_value/12)
+}
+
+function changeValue(id){
+  document.getElementById(id+'amount_monthly').value = Math.round(annulactc_value);
+  document.getElementById(id+'amount_annually').innerHTML = parseInt(annulactc_value/12)
+}
+
+function getType(e,targetId,currentTarget,className,deduction_id,dynamicId,title){
+   var calculation_type_id = document.getElementById(dynamicId);
+     console.log(e.target.value)
+   if(e.target.value == '1'){
+     calculation_type_id.innerHTML = '<td width="34%"><div id="ember80" class="ember-view"><div><span>'+title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group" id="'+targetId+'type"><select onchange="getType(event,\''+targetId+'\',\''+currentTarget+'\',\''+className+'\',\''+deduction_id+'\',\''+dynamicId+'\',\''+title+'\')" data-type="deduction" data-deduction_id="'+deduction_id+'" data-calculation_type="1" class="search-select form-control"><option value="1">Fixed Amount</option><option value="2">Basic</option></select></div></div></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: -16px;"><div class="input-group"><input data-type="deduction" data-sub_type="deduction_fixedamount" data-deduction_id="'+deduction_id+'" data-calculation_type="1" class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun(\''+targetId+'\',\''+currentTarget+'\',\''+className+'\',\''+title+'\',\''+null+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>'
+   }else if(e.target.value == '2'){
+        calculation_type_id.innerHTML = '<td width="34%"><div id="ember80" class="ember-view"><div><span>'+title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12" style="width: 240px;"><input id="ember121" class="form-control ember-text-field ember-view" data-type="deduction" data-deduction_id="'+deduction_id+'" data-sub_type="deduction_basic" data-calculation_type="2" type="number" step="0.01"><div id="'+targetId+'type"><select onchange="getType(event,\''+targetId+'\',\''+currentTarget+'\',\''+className+'\',\''+deduction_id+'\',\''+dynamicId+'\',\''+title+'\')" data-type="deduction" style="font-size:12px;" data-deduction_id="'+deduction_id+'" data-calculation_type="2" class="search-select form-control"><option value="2">% of Basic</option><option value="1">Fixed Amount</option></select></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: 0px;"><div class="input-group"><input disabled class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun(\''+targetId+'\',\''+currentTarget+'\',\''+className+'\',\''+title+'\',\''+null+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>'+
+   ' </div>'+
+'</td>'
+   }
+}
+
+
+
+
+
+function submit(){
+ //var valid = true,
+    
+   // $('#myForm input:not(:disabled)').each(function() {
+        //var $this = $(this);
+        //if(!$this.val()) {
+           // var inputName = $this.attr('name');
+           // valid = false;
+           // let error_id = $this.attr('id');
+           //var innerHTMLError =  document.getElementById(error_id+'_error')
+           //if(innerHTMLError){
+            //   innerHTMLError.innerHTML = 'Error'
+          // }
+        //}else{
+        //   let error_id = $this.attr('id');
+      //      document.getElementById(error_id+'_error').innerHTML = ''
+    //    }
+  //  });
+    
+  //  if(!valid) {
+  //  }else{
+   var url = "{% url 'administrations:save_salary_template' %}";
+   let earnings = [];
+   let salary_template = {};
+   let deduction = [];
+   var formVal = document.getElementById('myForm').elements;
+   for(let i=0;i<formVal.length;i++){
+       if(formVal[i].dataset.type == 'earnings'){
+           if(formVal[i].dataset.calculation_type == '1'){
+              earnings.push({'earning':formVal[i].dataset.earnings_id,'calculation_type':formVal[i].dataset.calculation_type,'calculation_percentage':formVal[i].value,'amount_monthly':200.0,'calculation_amount':null})
+           }else if(formVal[i].dataset.calculation_type == '2'){
+              earnings.push({'earning':formVal[i].dataset.earnings_id,'calculation_type':formVal[i].dataset.calculation_type,'calculation_amount':formVal[i].value,'amount_monthly':200.0,'calculation_percentage':null})
+           }
+       }else if(formVal[i].dataset.type == 'deduction'){
+         if(formVal[i].dataset.sub_type == 'deduction_fixedamount'){
+           deduction.push({'deduction':formVal[i].dataset.deduction_id,'calculation_type':1,'calculation_amount':formVal[i].value,'calculation_percentage':null,'amount_monthly':12.0})
+         }else if(formVal[i].dataset.sub_type == 'deduction_basic'){
+           deduction.push({'deduction':formVal[i].dataset.deduction_id,'calculation_type':2,'calculation_percentage':formVal[i].value,'calculation_amount':null,'amount_monthly':12.0})
+         }
+       }
+       else{
+         salary_template[formVal[i].id] = formVal[i].value;
+       }
+   }
+   $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+         'earnings': JSON.stringify(earnings),
+         'deduction':JSON.stringify(deduction),
+         'salary_template':JSON.stringify(salary_template)
+        },
+        success: function(result) {
+          window.location = "{% url 'administrations:salary_template' %}";
+        }
+    });
+  //  }
+}
+    </script>
+{% endblock script %}
+
+
+
+
+

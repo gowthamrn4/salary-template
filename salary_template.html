@@ -1,0 +1,98 @@
+{% extends 'base_admin.html' %}
+{% load custom_template %}
+{% load static %}
+
+{% block title %}Salary Template{% endblock title %}
+
+{% block content %}
+<style>
+.empty-state-help-centered {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 600px;
+    padding: 10px 30px;
+    margin: 135px auto;
+    text-align: center;
+}
+</style>
+<div class="app-page-title">
+	<div class="page-title-wrapper">
+		<div class="page-title-heading">
+			<div class="page-title-icon">
+				<i class="pe-7s-light icon-gradient bg-malibu-beach"></i>
+			</div>
+			<div>
+				Salary Template
+				<div class="page-title-subheading opacity-10">
+					<nav class="" aria-label="breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item">
+								<a href="{% url 'administrations:home_page' %}">
+									<i aria-hidden="true" class="fa fa-home"></i>
+								</a>
+							</li>
+							<li class="active breadcrumb-item" aria-current="page">
+								Salary Template
+							</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
+		{% if list_salary_template|length > 0 %}
+			<div class="page-title-actions">
+				<a href="{% url 'administrations:create_salary_template' %}" class="mt-1 btn btn-primary">New Salary Template</a>
+			</div>
+		{% endif %}
+	</div>
+</div>
+
+{% if list_salary_template|length > 0 %}
+<div class="main-card mb-3 card element-block-example">
+	<div class="card-body">
+		<table id ="salary_template_table" style="width: 100%;" class="table table-hover table-striped table-bordered">
+			<thead>
+				<tr>
+                    <th>Template Name</th>
+                    <th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+			 {% for obj in list_salary_template %}
+			  <tr>
+			    <td><a href="{% url 'administrations:update_salary_template' pk=obj.id %}">{{obj.template_name}}<a></td>
+				<td>{{obj.description}}</td>
+			  </tr>
+			 {% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endif %}
+
+{% if list_salary_template|length == 0 %}
+
+<div class="empty-state-help-centered empty-state-min-height has-feature-benefits">
+      <div class="image-section">
+     <!--   <img src="https://css.zohostatic.in/zfpayroll/zpayroll//assets/images/empty-states/salary-template.svg" style="height: 130px;"> -->
+      </div>
+      <div class="pbottom-medium ptop-xlarge">
+<!---->        <label class="font-moderate font-semibold">You haven't created any salary templates yet.</label>
+        <div class="font-mm text-darker">Create salary templates for commonly used salary structures and assign them to employees.</div>
+        <button class="btn btn-primary mtop-xlarge pp-btn" data-ember-action="" data-ember-action-280="280">
+		<a style="color:white" href="{% url 'administrations:create_salary_template' %}">Create Salary Template</a>
+		</button>
+      </div>
+    </div>
+{% endif %}
+
+{% endblock content %}
+{% block script %}
+    <script>
+		$('#salary_templates_toc').addClass('mm-active');
+		$('#loader_button').click();
+		$('#salary_template_table').DataTable()
+    </script>
+{% endblock script %}

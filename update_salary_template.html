@@ -1,0 +1,430 @@
+{% extends 'base_admin.html' %}
+{% load custom_template %}
+{% load static %}
+
+{% block title %}Update Salary Template{% endblock title %}
+
+{% block content %}
+
+  <style type="text/css">
+  	.table thead th{
+        background-color: #fff;
+        font-size: 10px;
+        height: 20px;
+        color: #000;
+        text-transform: uppercase;
+        padding-left: 10px;
+        padding-right: 10px;
+  	}
+    .input-group-prepend_01{
+        margin-right: -31px;
+      }
+    .salary-template-svg-info {
+        color: #a5a5a5;
+        width: 97px;
+        position: absolute;
+        left: 30px;
+    }
+    .error_label{
+        color: red;
+        font-size: 13px;
+        margin-left: 6px;
+    }
+    .input_type{
+        display:flex;
+        width:100%;
+    }
+  </style>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="">
+              <div class="container">
+                  <div class="tab-content">
+                        <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel"><br>
+                        	<h5 class="card-title">Update Salary Template</h5>
+                            <div class="main-card mb-3 card">
+                                <div class="card-body">
+                                    <div class="card">
+                                      <div class="form-row" style="justify-content: center;">
+                                            <div class="col-md-4">
+                                                <div class="position-relative form-group">
+                                                  <label for="exampleEmail11" class="">EARNINGS</label>
+                                                  <select onchange="earningchanges(event)" name="earings" id="earings_select" type="text" class="form-control">
+                                                    <option value="select" >Select</option>
+                                                  </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="position-relative form-group">
+                                                   <label for="description" class="">DEDUCTION</label>
+                                                      <select name="deduction" onchange="deductionchanges(event)" type="text" class="form-control" id="deduction_select" >
+                                                      <option value="select" >Select</option>
+                                                      </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <form class="" id="myForm">
+                          
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <div class="position-relative form-group">
+                                                  <label for="exampleEmail11" class="">Template Name</label>
+                                                  <input name="template_name" id="template_name" type="text" class="form-control" value="{{salary_template.template_name}}">
+                                                  <p id="template_name_error" class="error_label"></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="position-relative form-group">
+                                                   <label for="description" class="">Description</label>
+                                                      <input name="description" value="{{salary_template.description}}" id="description" type="text" class="form-control">
+                                                      <p id="description_error" class="error_label"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                         <div class="card" style="padding: 20px;">
+                                      <div class="form-row">
+                                            <div class="col-md-4">
+                                               	Annual CTC
+                                            </div>
+                                            <div class="col-md-4">
+                                              <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <div class="input-group-text">
+                                                                <i class="fa fas fa-dollar-sign"></i>
+                                                            </div>
+                                                        </div>
+                                                        <input id="annual_ctc" value="{{salary_template.annual_ctc}}" class="form-control input-mask-trigger" oninput="annulactc(event)" type="number"data-inputmask="'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true" im-insert="true" style="text-align: right;">
+                                                        <i style="margin-top: 10px;margin-left: 5px;"><b>Per Year</b></i>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                        <br>
+
+        
+                                     <div class="table">
+                                     	<table>
+                                     		<thead>
+                                     			<tr>
+                                     				<th>SALARY COMPONENTS</th>
+                                                    <th>CALCULATION TYPE</th>
+                                                    <th>AMOUNT MONTHLY</th>
+                                                    <th>AMOUNT ANNUALLY	</th>
+                                     			</tr>
+                                     		</thead>
+                                             <tbody id="Earnings_tbody">
+                                               <tr>
+                                                 <td colspan="5" class="row-group font-semibold font-xmedium"><b>Earnings</b></td>            
+                                               </tr>
+                                            </tbody>
+
+                                            <tbody id="Dashboards">
+                                            {% for obj in salary_template_earning %}
+                                              {% if obj.calculation_type == 1 %}
+                                                <tr id="{{obj.key}}earings_menu">
+                                                 <td width="34%"><div id="ember80" class="ember-view"><div><span>{{obj.title}}</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group"> <input class="form-control input-mask-trigger earnings" data-type="earnings" data-earnings_id="{{obj.earning_id}}" data-update_id="{{obj.id}}" data-calculation_type="{{obj.calculation_type}}" id="{{obj.key}}input" value="50"  type="number"><div class="input-group-prepend input-group-prepend_01"><div class="input-group-text"><i class="fa fas">% of Basic</i></div></div></div></div></div></div></td><td width="18%" class="text-right"> <div class="col-sm-12" style="margin-top: -14px;"><div class="input-group"><input class="form-control input-mask-trigger" value="0" id="'+e.target.id+'amount_monthly"  disabled type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right" id="'+e.target.id+'amount_annually">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox('{{obj.key}}','{{obj.key}}earings_menu','{{obj.earning_id}}','{{obj.calculation_type}}','{{obj.key}}','{{obj.title}}','{{obj.id}}')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>
+                                                </tr>
+                                                {% elif obj.calculation_type == 2 %}
+                                                 <tr id="{{obj.key}}earings_menu">
+                                                 <td width="34%"><div id="ember80" class="ember-view"><div><span>{{obj.title}}</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group">Fixed amount</div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: 0px;"><div class="input-group"><input data-update_id="{{obj.id}}" data-type="earnings" data-earnings_id="{{obj.earning_id}}" data-calculation_type="{{obj.calculation_type}}" id="{{obj.key}}input" class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox('{{obj.key}}','{{obj.key}}earings_menu','{{obj.earning_id}}','{{obj.calculation_type}}','{{obj.key}}','{{obj.title}}','{{obj.id}}')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>
+                                                 </tr>
+                                              {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                            <tbody id="Deduction_tbody">
+                                                <tr>
+                                                 <td rowspan="5" class="row-group font-semibold font-xmedium"><b>Deduction</b></td>            
+                                                      </tr>
+                                                    </tbody>
+                                                    <tbody id="deduction_dashboards">
+                                                      {% for obj in salary_template_deduction %}
+                                                       {% if obj.calculation_type == 2 %}
+                                                        <tr id="{{obj.key}}deduction_menu">
+                                                         <td width="34%"><div id="ember80" class="ember-view"><div><span>{{obj.title}}</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group" id="'+e.target.id+'type"><select onchange="getType(event,'{{obj.key}}deduction_menu','{{obj.title}}','{{obj.deduction_id}}','{{obj.calculation_type}}')" data-type="deduction" data-deduction_id="{{obj.deduction_id}}" data-calculation_type="1" class="form-control"><option value="1">Fixed Amount</option><option value="2">Basic</option></select></div></div></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: -16px;"><div class="input-group"><input data-type="deduction" data-deduction_id="{{obj.deduction_id}}" data-update_id="{{obj.id}}" data-sub_type="deduction_fixedamount" class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox_deduction('{{obj.key}}','{{obj.key}}deduction_menu','{{obj.deduction_id}}','{{obj.calculation_type}}','{{obj.key}}','{{obj.title}}','{{obj.id}}')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>
+                                                        </tr>
+                                                        {% elif obj.calculation_type == 1 %}
+                                                        <tr id="{{obj.key}}deduction_menu">
+                                                          <td width="34%"><div id="ember80" class="ember-view"><div><span>{{obj.title}}</span></div></div></td><td width="28%"><div class="input-group col-xs-12" style="width: 240px;"><input id="ember121" class="form-control ember-text-field ember-view" data-type="deduction" data-deduction_id="{{obj.deduction_id}}" data-sub_type="deduction_basic" data-update_id="{{obj.id}}" data-calculation_type="2" type="number" step="0.01"><div id="'+targetId+'type"><select onchange="getType(event,'{{obj.key}}deduction_menu','{{obj.title}}','{{obj.deduction_id}}','{{obj.calculation_type}}')" data-type="deduction" style="font-size:12px;" data-deduction_id="'+deduction_id+'" data-calculation_type="2" class="form-control"><option value="2">% of Basic</option><option value="1">Fixed Amount</option></select></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: 0px;"><div class="input-group"><input disabled class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox_deduction('{{obj.key}}','{{obj.key}}deduction_menu','{{obj.deduction_id}}','{{obj.calculation_type}}','{{obj.key}}','{{obj.title}}','{{obj.id}}')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>
+                                                          </tr>
+                                                        {% endif %}
+                                                      {% endfor %}
+                                                    </tbody>
+
+                                                  <tbody>
+                                                    <tr>
+                                                    <td width="34%">
+                                                        <div id="ember80" class="ember-view">
+                                                            <div>
+                                                               <span><b>Cost to Company</b></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td width="28%">
+
+                                                    </td>
+                                                    <td width="18%" class="text-right">
+                                                        <b id="annulactc_output/div">   0 </b>
+                                                    </td>
+                                                    <td width="20%" class="text-right">
+                                                         <b id="annulactc_output">   0 </b>
+                                                    </td>
+                                                    <td class="text-right">
+                                                    </td>
+                                                </tr>
+                                                                                      
+                                          </tbody>
+                                     	</table>
+                                     </div>
+                                    </div>
+
+                                     <div class="row">
+                                       <div class="col-sm-1">
+                                            <a class="mt-2 btn btn-primary" style="color:white" onclick="submit()">Update</a>
+                                       </div>
+                                       <div class="col-sm-1">
+                                            <button class="mt-2 btn btn">
+                                             <a style="color:black" href="{% url 'administrations:salary_template' %}">Cancel</a>
+                                            </button>
+                                       </div>
+                                     </div>
+
+                                    </form>
+                                </div>
+                            </div>
+      </div>
+    </div>
+
+{% endblock content %}
+{% block script %}
+    <script>
+
+      let annulactc_value = '';
+      let earning_type_map_count = '{{ earning_type_map|length }}';
+      let deduction_type_map_count = '{{ deduction_list|length }}';
+
+// ------------------------------earning select box init --------------------//
+ let earning_type_data = [];
+ let salary_template_earning_data = [];
+ {% for obj in earning_type_map %}
+   earning_type_data.push({'id':"{{obj.id}}",'key':"{{obj.key}}",'title':"{{obj.title}}",'calculation_type':"{{obj.calculation_type}}"})
+ {% endfor %}
+
+ {% for obj in salary_template_earning %}
+   salary_template_earning_data.push({'id':"{{obj.earning_id}}",'update_id':"{{obj.id}}"})
+ {% endfor %}
+ 
+ var balance_earing_menu = earning_type_data.filter(function(o1){
+    return !salary_template_earning_data.some(function(o2){
+        return o1.id === o2.id;
+    });
+ })
+
+ let earings_innerHTML = document.getElementById('earings_select');
+ for(let i=0;i<balance_earing_menu.length;i++){
+   earings_innerHTML.innerHTML +='<option data-id="'+balance_earing_menu[i].key+'" data-title="'+balance_earing_menu[i].title+'" data-calculation_type="'+balance_earing_menu[i].calculation_type+'" data-earings_id="'+balance_earing_menu[i].id+'">'+balance_earing_menu[i].title+'</option>'
+ }
+//-------------------------------------------end---------------------------------------//
+
+//----------------------------------------- deduction_ select box init -------------------------------------------//
+
+
+ let deduction_type_data = [];
+ let salary_template_deduction_data = [];
+ {% for obj in deduction_list %}
+   deduction_type_data.push({'id':"{{obj.id}}",'key':"{{obj.key}}",'title':"{{obj.title}}",'calculation_type':"{{obj.calculation_type}}"})
+ {% endfor %}
+
+ {% for obj in salary_template_deduction %}
+   salary_template_deduction_data.push({'id':"{{obj.deduction_id}}"})
+ {% endfor %}
+ 
+ var balance_deduction_menu = deduction_type_data.filter(function(o1){
+    return !salary_template_deduction_data.some(function(o2){
+        return o1.id === o2.id;
+    });
+ })
+  
+ let deduction_innerHTML = document.getElementById('deduction_select');
+ for(let i=0;i<balance_deduction_menu.length;i++){
+      console.log(balance_deduction_menu[i])
+   deduction_innerHTML.innerHTML +='<option data-id="'+balance_deduction_menu[i].key+'" data-title="'+balance_deduction_menu[i].title+'" data-calculation_type="'+balance_deduction_menu[i].calculation_type+'" data-deduction_id="'+balance_deduction_menu[i].id+'">'+balance_deduction_menu[i].title+'</option>'
+ }
+
+
+
+//------------------------------------------end-----------------------------------------//
+
+var deductionDivCount = $("#deduction_dashboards > tr").length;
+var EarningsDivCount = $("#Dashboards > tr").length;
+if(deductionDivCount == 0){
+   document.getElementById('Deduction_tbody').style.display ='none';
+}
+if(EarningsDivCount == 0){
+   document.getElementById('Earnings_tbody').style.display ='none';
+}
+
+function getInput(targetId){
+   let value = document.getElementById(targetId+'input').value;
+}
+
+function annulactc(e){
+   annulactc_value = e.target.value
+   document.getElementById('annulactc_output').innerHTML = Math.round(annulactc_value);
+   document.getElementById('annulactc_output/div').innerHTML = parseInt(annulactc_value/12)
+}
+
+function changeValue(id){
+  document.getElementById(id+'amount_monthly').value = Math.round(annulactc_value);
+  document.getElementById(id+'amount_annually').innerHTML = parseInt(annulactc_value/12)
+}
+
+function getType(e,dynamicId,title,deduction_id,calculation_type,id,update_id){
+   var calculation_type_id = document.getElementById(dynamicId);
+     console.log('hello test',deduction_id)
+   if(e.target.value == '1'){
+     calculation_type_id.innerHTML = '<td width="34%"><div id="ember80" class="ember-view"><div><span>'+title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group" ><select onchange="getType(event,\''+dynamicId+'\',\''+title+'\',\''+deduction_id+'\',\''+calculation_type+'\',\''+id+'\',\''+update_id+'\')"  data-type="deduction" data-deduction_id="'+deduction_id+'" class="form-control"><option value="1">Fixed Amount</option><option value="2">Basic</option></select></div></div></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: -16px;"><div class="input-group"><input data-type="deduction"  data-deduction_id="'+deduction_id+'" data-update_id="'+update_id+'"  data-sub_type="deduction_fixedamount" data-calculation_type="'+calculation_type+'"  class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox_deduction(\''+e.target.id+'\',\''+dynamicId+'\',\''+deduction_id+'\',\''+calculation_type+'\',\''+id+'\',\''+title+'\',\''+update_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>'
+   }else if(e.target.value == '2'){
+        calculation_type_id.innerHTML = '<td width="34%"><div id="ember80" class="ember-view"><div><span>'+title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12" style="width: 240px;"><input id="ember121" class="form-control ember-text-field ember-view" data-type="deduction"  data-deduction_id="'+deduction_id+'" data-update_id="'+update_id+'"  data-sub_type="deduction_basic" data-calculation_type="'+calculation_type+'" type="number" step="0.01"><div ><select onchange="getType(event,\''+dynamicId+'\',\''+title+'\',\''+deduction_id+'\',\''+calculation_type+'\',\''+id+'\',\''+update_id+'\')"  data-type="deduction" style="font-size:12px;"  data-calculation_type="2" class="form-control"><option value="2">% of Basic</option><option value="1">Fixed Amount</option></select></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: 0px;"><div class="input-group"><input disabled class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox_deduction(\''+e.target.id+'\',\''+dynamicId+'\',\''+deduction_id+'\',\''+calculation_type+'\',\''+id+'\',\''+title+'\',\''+update_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>'+
+   ' </div>'+
+'</td>'
+   }
+}
+
+
+function earningchanges(e){
+  var dataset = e.target.options[e.target.selectedIndex].dataset;
+  var dynamicId = e.target.id + dataset.id;
+  console.log('dataset',dataset.update_id)
+  var earings_id = dataset.earings_id;
+  console.log('earings_id',earings_id)
+  var create_tr = document.createElement('tr');
+  var calculation_type = dataset.calculation_type;
+  create_tr.setAttribute("id", dynamicId);
+  if(Object.keys(dataset).length === 0){
+   console.log('false')
+  }else{
+   var divCount = $("#Dashboards > tr").length;
+   console.log('divCount',divCount)
+   if(divCount >= 0){
+      document.getElementById('Earnings_tbody').style.display ='block';
+    }
+    if(calculation_type == 2){
+      create_tr.innerHTML ='<td width="34%"><div id="ember80" class="ember-view"><div><span>'+dataset.title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group">Fixed amount</div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: 0px;"><div class="input-group"><input data-type="earnings" data-earnings_id="'+earings_id+'" data-calculation_type="'+calculation_type+'" data-update_id="'+dataset.update_id+'" class="form-control input-mask-trigger" value="0" type="number" id="'+e.target.id+'input" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox(\''+e.target.id+'\',\''+dynamicId+'\',\''+earings_id+'\',\''+calculation_type+'\',\''+dataset.id+'\',\''+dataset.title+'\',\''+dataset.update_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>';
+         document.getElementById('Dashboards').appendChild(create_tr);
+      $("#earings_select option:selected").remove();
+    }else if(calculation_type == 1){
+       create_tr.innerHTML ='<td width="34%"><div id="ember80" class="ember-view"><div><span>'+dataset.title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group"> <input class="form-control input-mask-trigger earnings" data-type="earnings" data-earnings_id="'+earings_id+'" data-update_id="'+dataset.update_id+'"  data-calculation_type="'+calculation_type+'" id="'+e.target.id+'input" value="50"  type="number" oninput="getInput(\''+e.target.id+'\')"><div class="input-group-prepend input-group-prepend_01" onclick="changeValue(\''+e.target.id+'\')"><div class="input-group-text"><i class="fa fas">% of Basic</i></div></div></div></div></div></div></td><td width="18%" class="text-right"> <div class="col-sm-12" style="margin-top: -14px;"><div class="input-group"><input class="form-control input-mask-trigger" value="0" id="'+e.target.id+'amount_monthly"  disabled type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right" id="'+e.target.id+'amount_annually">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox(\''+e.target.id+'\',\''+dynamicId+'\',\''+earings_id+'\',\''+calculation_type+'\',\''+dataset.id+'\',\''+dataset.title+'\',\''+dataset.update_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>';
+            document.getElementById('Dashboards').appendChild(create_tr);
+            $("#earings_select option:selected").remove();
+    }
+  }
+}
+
+function retrun_selectBox(targetId,parent_id,earings_id,calculation_type,key,title,update_id){
+  $('#'+parent_id).remove();
+  console.log('earings_id',earings_id)
+  document.getElementById('earings_select').innerHTML +='<option data-id="'+key+'" data-title="'+title+'" data-calculation_type="'+calculation_type+'" data-earings_id="'+earings_id+'" data-update_id="'+update_id+'">'+title+'</option>';
+  var divCount = $("#Dashboards > tr").length;
+  if(divCount == 0){
+    document.getElementById('Earnings_tbody').style.display ='none';
+  }
+}
+
+
+function deductionchanges(e){
+  var dataset = e.target.options[e.target.selectedIndex].dataset;
+  var dynamicId = dataset.id+'deduction_menu';
+  var deduction_id = dataset.deduction_id;
+  console.log('earings_id',deduction_id)
+  var key = dataset.id+'deduction_menu'
+  console.log('dataset',dataset)
+  var create_tr = document.createElement('tr');
+  var calculation_type = dataset.calculation_type;
+  create_tr.setAttribute("id", dynamicId);
+  if(Object.keys(dataset).length === 0){
+   console.log('false')
+  }else{
+   var divCount = $("#deduction_dashboards > tr").length;
+   if(divCount >= 0){
+      document.getElementById('Deduction_tbody').style.display ='block';
+    }
+      create_tr.innerHTML ='<td width="34%"><div id="ember80" class="ember-view"><div><span>'+dataset.title+'</span></div></div></td><td width="28%"><div class="input-group col-xs-12 col-sm-10"><div class="position-relative form-group row"> <div class="col-sm-12"><div class="input-group" id="'+e.target.id+'type"><select onchange="getType(event,\''+key+'\',\''+dataset.title+'\',\''+deduction_id+'\',\''+calculation_type+'\',\''+dataset.id+'\',\''+dataset.update_id+'\')" data-type="deduction"  data-calculation_type="1" class="form-control"><option value="1">Fixed Amount</option><option value="2">Basic</option></select></div></div></div></div></td><td width="18%" class="text-right"><div class="col-sm-12" style="margin-top: -16px;"><div class="input-group"><input data-type="deduction" data-sub_type="deduction_fixedamount" data-deduction_id="'+deduction_id+'" class="form-control input-mask-trigger" value="0" type="number" style="text-align: right;"></div></div></td><td width="20%" class="text-right">0</td><td class="text-right"><div style="cursor: pointer;" onclick="retrun_selectBox_deduction(\''+e.target.id+'\',\''+dynamicId+'\',\''+deduction_id+'\',\''+calculation_type+'\',\''+dataset.id+'\',\''+dataset.title+'\',\''+dataset.update_id+'\')"><i class="fa fa-fw" aria-hidden="true" title="Copy to use close"></i></div></td>';
+         document.getElementById('deduction_dashboards').appendChild(create_tr);
+      $("#deduction_select option:selected").remove();
+  }
+}
+
+
+function retrun_selectBox_deduction(targetId,parent_id,earings_id,calculation_type,key,title,update_id){
+ var s=  document.getElementById(parent_id);
+ console.log('*************',earings_id)
+  $('#'+parent_id).remove();
+  document.getElementById('deduction_select').innerHTML +='<option data-id="'+key+'" data-title="'+title+'" data-calculation_type="'+calculation_type+'" data-deduction_id="'+earings_id+'" data-update_id="'+update_id+'">'+title+'</option>';
+  var divCount = $("#deduction_dashboards > tr").length;
+  if(divCount == 0){
+    document.getElementById('Deduction_tbody').style.display ='none';
+  }
+}
+
+function submit(){
+ //var valid = true,
+    
+   // $('#myForm input:not(:disabled)').each(function() {
+        //var $this = $(this);
+        //if(!$this.val()) {
+           // var inputName = $this.attr('name');
+           // valid = false;
+           // let error_id = $this.attr('id');
+           //var innerHTMLError =  document.getElementById(error_id+'_error')
+           //if(innerHTMLError){
+            //   innerHTMLError.innerHTML = 'Error'
+          // }
+        //}else{
+        //   let error_id = $this.attr('id');
+      //      document.getElementById(error_id+'_error').innerHTML = ''
+    //    }
+  //  });
+    
+  //  if(!valid) {
+  //  }else{
+   var url = "{% url 'administrations:save_salary_template' %}";
+   let earnings = [];
+   let salary_template = {};
+   let deduction = [];
+   var formVal = document.getElementById('myForm').elements;
+   for(let i=0;i<formVal.length;i++){
+       if(formVal[i].dataset.type == 'earnings'){
+           if(formVal[i].dataset.calculation_type == '1'){
+              earnings.push({'earning':formVal[i].dataset.earnings_id,'calculation_type':formVal[i].dataset.calculation_type,'calculation_percentage':formVal[i].value,'amount_monthly':200.0,'calculation_amount':null,'update_id':formVal[i].dataset.update_id})
+           }else if(formVal[i].dataset.calculation_type == '2'){
+              earnings.push({'earning':formVal[i].dataset.earnings_id,'calculation_type':formVal[i].dataset.calculation_type,'calculation_amount':formVal[i].value,'amount_monthly':200.0,'calculation_percentage':null,'update_id':formVal[i].dataset.update_id})
+           }
+       }else if(formVal[i].dataset.type == 'deduction'){
+         console.log('TEst',formVal[i].dataset.sub_type)
+         if(formVal[i].dataset.sub_type == 'deduction_fixedamount'){
+                    console.log('deduction_fixedamount',formVal[i])
+           deduction.push({'deduction':formVal[i].dataset.deduction_id,'calculation_type':1,'calculation_amount':formVal[i].value,'calculation_percentage':null,'amount_monthly':12.0,'update_id':formVal[i].dataset.update_id})
+         }else if(formVal[i].dataset.sub_type == 'deduction_basic'){
+                               console.log('deduction_basic',formVal[i])
+           deduction.push({'deduction':formVal[i].dataset.deduction_id,'calculation_type':2,'calculation_percentage':formVal[i].value,'calculation_amount':null,'amount_monthly':12.0,'update_id':formVal[i].dataset.update_id})
+         }
+       }
+       else{
+         salary_template[formVal[i].id] = formVal[i].value;
+       }
+   }
+   console.log('salary_template',salary_template)
+   console.log('deduction',deduction)
+   console.log('earnings',earnings)
+  //  }
+}
+    </script>
+{% endblock script %}
+
+
+
+
+
